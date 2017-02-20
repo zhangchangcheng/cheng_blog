@@ -1,0 +1,25 @@
+{
+  "name": "cheng_blog",
+  "version": "1.0.0",
+  "description": "a blog with vue.js koa mogbo",
+  "main": "index.js",
+  "scripts": {
+    "test": "echo \"Error: no test specified\" && exit 1"
+  },
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/zhangchangcheng/cheng_blog.git"
+  },
+  "author": "",
+  "license": "MIT",
+  "bugs": {
+    "url": "https://github.com/zhangchangcheng/cheng_blog/issues"
+  },
+  "homepage": "https://github.com/zhangchangcheng/cheng_blog#readme",
+  "devDependencies": {
+    "webpack": "^2.2.1"
+  },
+  "dependencies": {
+    "koa": "^1.2.5"
+  }
+}
