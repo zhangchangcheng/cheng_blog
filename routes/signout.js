@@ -5,7 +5,10 @@ var checkLogin = require('../middlewares/check').checkLogin;
 
 // 登出
 router.get('/', checkLogin, function (req, res, next) {
-    res.send(req.flash());
+    // 清空session 中的用户信息
+    req.session.user = null;
+    req.flash('sucess', '登出成功');
+    res.redirect('/posts');
 });
 
 module.exports = router;
