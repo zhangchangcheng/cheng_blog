@@ -1,11 +1,12 @@
 var express = require('express');
 var router = express.Router();
 
-var checkLogin = require('../middlewares/check').checkLogin;
 var PostModel = require('../models/posts');
+var checkLogin = require('../middlewares/check').checkLogin;
 
-// Get  /posts 所有用户或者特定用户的文章页
-router.get('/', function (req, res, next) {
+// GET /posts 所有用户或者特定用户的文章页
+//   eg: GET /posts?author=xxx
+router.get('/', function(req, res, next) {
     var author = req.query.author;
 
     PostModel.getPosts(author)
@@ -17,13 +18,18 @@ router.get('/', function (req, res, next) {
         .catch(next);
 });
 
-// Post  /posts发表一篇文章
-router.post('/', function (req, res, next) {
+// GET /posts/create 发表文章页
+router.get('/create', checkLogin, function(req, res, next) {
+    res.render('create');
+});
+
+// POST /posts 发表一篇文章
+router.post('/', checkLogin, function(req, res, next) {
     var author = req.session.user._id;
     var title = req.fields.title;
     var content = req.fields.content;
 
-    //检验参数
+    // 校验参数
     try {
         if (!title.length) {
             throw new Error('请填写标题');
@@ -45,37 +51,34 @@ router.post('/', function (req, res, next) {
 
     PostModel.create(post)
         .then(function (result) {
+            // 此 post 是插入 mongodb 后的值，包含 _id
             post = result.ops[0];
             req.flash('success', '发表成功');
             // 发表成功后跳转到该文章页
-            res.redirect(`/post/${post._id}`);
+            res.redirect(`/posts/${post._id}`);
         })
         .catch(next);
 });
 
-//GET 发表文章页
-router.get('/create', checkLogin, function (req, res, next) {
-    res.render('create');
-});
-
-// GET  单独一篇的文章页
-router.get('/:postId', function (req, res, next) {
+// GET /posts/:postId 单独一篇的文章页
+router.get('/:postId', function(req, res, next) {
     var postId = req.params.postId;
 
     Promise.all([
-        PostModel.getPostById(postId), // 获取文章信息
-        PostModel.incPv(postId)
+        PostModel.getPostById(postId),// 获取文章信息
+        PostModel.incPv(postId)// pv 加 1
     ])
-    .then(function (result) {
-        var post = result[0];
-        if (!post) {
-            throw new Error('该文章不存在');
-        }
+        .then(function (result) {
+            var post = result[0];
+            var comments = result[1];
+            if (!post) {
+                throw new Error('该文章不存在');
+            }
 
-        res.render('post', {
-            post: post
-        });
-    })
+            res.render('post', {
+                post: post
+            });
+        })
         .catch(next);
 });
 
