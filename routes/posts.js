@@ -83,7 +83,7 @@ router.get('/:postId', function(req, res, next) {
         .catch(next);
 });
 
-// GET /posts/:postId/edit 更新文章页
+// GET /posts/:postId/edit 更新文章页 //
 router.get('/:postId/edit', checkLogin, function(req, res, next) {
     var postId = req.params.postId;
     var author = req.session.user._id;
